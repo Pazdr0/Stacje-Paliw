@@ -6,6 +6,9 @@ public class MyFrame extends JFrame{
 	
 	private static final long serialVersionUID = 672L;
 
+	public MyFrame() {
+
+	}
 	
 	
 }

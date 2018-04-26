@@ -36,10 +36,11 @@ public class MyFrame extends JFrame{
 	
 	private daneSamochodu samochod = new daneSamochodu();
 	private Trasa trasa = new Trasa();
-//	private MyMap mojaMapa = new MyMap();
+	private MyMap mojaMapa;
 	
 	public MyFrame() {
 		informacjeOkno();
+//		wyborTrasy();
 	}
 	
 	private void informacjeOkno() {
@@ -82,7 +83,8 @@ public class MyFrame extends JFrame{
 	}
 	
 	private void wyborTrasy() {
-		
+		mojaMapa = new MyMap();
+//		https://docs.oracle.com/javase/tutorial/uiswing/layout/card.html this.
 	}
 	
 	//Klasa definiuje jak działa przyciskDalej

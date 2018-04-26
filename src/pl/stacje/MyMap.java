@@ -27,7 +27,7 @@ public class MyMap extends MapView{
 					final Map map = getMap();
 					map.setZoom(5.0);
 					GeocoderRequest request = new GeocoderRequest();
-					request.setAddress("Wrocław");
+					request.setAddress("Warszawa");
 
 					getServices().getGeocoder().geocode(request, new GeocoderCallback(map) {
 						@Override
@@ -43,11 +43,10 @@ public class MyMap extends MapView{
 	}
 	
 	
-	public static void main(String[] args) {
-        final MyMap mapView = new MyMap();
+	public void start(){
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.add(mapView, BorderLayout.CENTER);
+        frame.add(this, BorderLayout.CENTER);
         frame.setSize(700, 500);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);

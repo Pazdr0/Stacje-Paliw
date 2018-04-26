@@ -15,8 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
-import com.sun.javafx.collections.MapAdapterChange;
-
 
 public class MyFrame extends JFrame{
 	
@@ -38,12 +36,14 @@ public class MyFrame extends JFrame{
 	
 	private daneSamochodu samochod = new daneSamochodu();
 	private Trasa trasa = new Trasa();
+//	private MyMap mojaMapa = new MyMap();
 	
 	public MyFrame() {
-		informacje();
+		informacjeOkno();
 	}
 	
-	private void informacje() {
+	private void informacjeOkno() {
+		//TODO do poprawienia jest cały układ graficzny, narazie jest dosyć chujowy, ale działa
 		etykietkaInfo.setFont(new Font("Serif", Font.PLAIN, 26));
 		etykietkaInfo2.setFont(new Font("Serif", Font.PLAIN, 20));
 		etykietkaInfo.setVerticalAlignment(SwingConstants.CENTER);
@@ -81,13 +81,19 @@ public class MyFrame extends JFrame{
 		this.getContentPane().add(panelInfo, BorderLayout.CENTER);
 	}
 	
+	private void wyborTrasy() {
+		
+	}
+	
 	//Klasa definiuje jak działa przyciskDalej
 	class przyciskListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
+			//Pola Pojemność silnika oraz Średnie spalanie są polami wymaganymi, sprawdzam czy są podane, jeśli nie odpalam błąd
 			if (polePojemnosc.getText().isEmpty() || poleSpalanie.getText().isEmpty()) {
 				wymaganaWartosc();
 			}
 			else {
+				//Zapisuje wartości z pól do składowych obiektu samochód, jeśli wartości nie są liczbowe odpalam błąd
 				try {
 					samochod.setPojemnoscZbiornika(Integer.parseInt(polePojemnosc.getText()));
 				} catch (NumberFormatException e) {
@@ -99,11 +105,14 @@ public class MyFrame extends JFrame{
 					zlaWartosc("Średnie spalanie");
 				}
 			}
+			//Jedno z tych pól jest wymagane, jesli nie będzie wpisane to błąd
 			if (poleIleKm.getText().isEmpty() && poleIleWZbiorniku.getText().isEmpty()) {
 				wymaganaWartosc2();
 			}
 			else {
+				//Sprawdzam czy ile w zbiorniku ma jakąś wpisaną wartość, jeśli nie to sprawdzam ile zostało km
 				if (!poleIleWZbiorniku.getText().isEmpty()) {
+					//Zapisuje wartości z pól do składowych obiektu samochód, jeśli wartości nie są liczbowe odpalam błąd
 					try {
 						samochod.setIloscPaliwa(Double.parseDouble(poleIleWZbiorniku.getText()));
 					} catch (NumberFormatException e) {
@@ -111,6 +120,7 @@ public class MyFrame extends JFrame{
 					}	
 				}
 				else {
+					//Zapisuje wartości z pól do składowych obiektu samochód, jeśli wartości nie są liczbowe odpalam błąd
 					try {
 						samochod.setIleKmZostalo(Double.parseDouble(poleIleKm.getText()));
 					} catch (NumberFormatException e) {
@@ -118,7 +128,7 @@ public class MyFrame extends JFrame{
 					}
 				}
 			}
-			startMapa();
+			wyborTrasy();
 		}		
 		//Wyskakuje okienko dialogowe jeśli wprowadzono niepoprawną wartość
 		private void zlaWartosc(String nazwa) {
@@ -131,9 +141,6 @@ public class MyFrame extends JFrame{
 		//Wyskakuje okienko dialogowe jeśli nie wprowadzono wartości
 		private void wymaganaWartosc2() {
 			JOptionPane.showMessageDialog(rootPane, "Pole 'Ile jest akutalnie paliwa w zbiorniku' lub pole 'Ile kilometrów zostało do przejechania' jest wymagane", "Brak wartości", JOptionPane.ERROR_MESSAGE);
-		}
-		private void startMapa() {
-			new MyMap();
 		}
 	}
 }

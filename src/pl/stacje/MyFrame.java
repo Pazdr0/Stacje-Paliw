@@ -4,13 +4,19 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+
+import com.sun.javafx.collections.MapAdapterChange;
+
 
 public class MyFrame extends JFrame{
 	
@@ -30,12 +36,13 @@ public class MyFrame extends JFrame{
 	private JTextArea poleIleWZbiorniku = new JTextArea();
 	private JTextArea poleIleKm = new JTextArea();
 	
-	
+	private daneSamochodu samochod = new daneSamochodu();
+	private Trasa trasa = new Trasa();
 	
 	public MyFrame() {
 		informacje();
 	}
-
+	
 	private void informacje() {
 		etykietkaInfo.setFont(new Font("Serif", Font.PLAIN, 26));
 		etykietkaInfo2.setFont(new Font("Serif", Font.PLAIN, 20));
@@ -44,13 +51,14 @@ public class MyFrame extends JFrame{
 		Dimension poleDim = new Dimension(10, 10);
 		polePojemnosc.setMaximumSize(poleDim);
 		
+		//Ustawienie Layoutu
 		GridLayout gridLayout = new GridLayout(4, 2);
 		gridLayout.setHgap(10);
 		gridLayout.setVgap(70);
 		panelInfo.setLayout(gridLayout);
 		panelInfo2.setLayout(new GridLayout(2, 1));
-	
 
+		//Dodaje wszystkie komponenty do panelu
 		panelInfo.add(etykietkaPojemnosc);
 		panelInfo.add(polePojemnosc);
 		panelInfo.add(etykietkaSpalanie);
@@ -60,13 +68,72 @@ public class MyFrame extends JFrame{
 		panelInfo.add(etykietkaIleKm);		
 		panelInfo.add(poleIleKm);
 		
+		//Dodaje wszystkie komponenty do panelu 2
 		panelInfo2.add(etykietkaInfo);
 		panelInfo2.add(etykietkaInfo2);
 		
+		//Po klinieciu przycisku wpisuje dane z okienek do obieku samochod i przechodze do okna wybierania trasy
+		przyciskDalej.addActionListener(new przyciskListener());
+		
+		//Dodaje panel przycisk i drugi panel do ramki
 		this.getContentPane().add(przyciskDalej, BorderLayout.SOUTH);
 		this.getContentPane().add(panelInfo2, BorderLayout.NORTH);
 		this.getContentPane().add(panelInfo, BorderLayout.CENTER);
 	}
 	
-	
+	//Klasa definiuje jak działa przyciskDalej
+	class przyciskListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			if (polePojemnosc.getText().isEmpty() || poleSpalanie.getText().isEmpty()) {
+				wymaganaWartosc();
+			}
+			else {
+				try {
+					samochod.setPojemnoscZbiornika(Integer.parseInt(polePojemnosc.getText()));
+				} catch (NumberFormatException e) {
+					zlaWartosc("Pojemność zbiornika");
+				}
+				try {
+					samochod.setSrednieSpalanie(Double.parseDouble(poleSpalanie.getText()));
+				} catch (NumberFormatException e) {
+					zlaWartosc("Średnie spalanie");
+				}
+			}
+			if (poleIleKm.getText().isEmpty() && poleIleWZbiorniku.getText().isEmpty()) {
+				wymaganaWartosc2();
+			}
+			else {
+				if (!poleIleWZbiorniku.getText().isEmpty()) {
+					try {
+						samochod.setIloscPaliwa(Double.parseDouble(poleIleWZbiorniku.getText()));
+					} catch (NumberFormatException e) {
+						zlaWartosc("Ile paliwa w zbiorniku");
+					}	
+				}
+				else {
+					try {
+						samochod.setIleKmZostalo(Double.parseDouble(poleIleKm.getText()));
+					} catch (NumberFormatException e) {
+						zlaWartosc("Ile kilometrów zostało do przejechania");
+					}
+				}
+			}
+			startMapa();
+		}		
+		//Wyskakuje okienko dialogowe jeśli wprowadzono niepoprawną wartość
+		private void zlaWartosc(String nazwa) {
+			JOptionPane.showMessageDialog(rootPane, "Proszę wprowadzić wartość liczbową", nazwa, JOptionPane.ERROR_MESSAGE);
+		}
+		//Wyskakuje okienko dialogowe jeśli nie wprowadzono wartości
+		private void wymaganaWartosc() {
+			JOptionPane.showMessageDialog(rootPane, "Pole 'Pojemność slinika' oraz 'Średnie spalanie' są wymagane'", "Brak wartości", JOptionPane.ERROR_MESSAGE);
+		}
+		//Wyskakuje okienko dialogowe jeśli nie wprowadzono wartości
+		private void wymaganaWartosc2() {
+			JOptionPane.showMessageDialog(rootPane, "Pole 'Ile jest akutalnie paliwa w zbiorniku' lub pole 'Ile kilometrów zostało do przejechania' jest wymagane", "Brak wartości", JOptionPane.ERROR_MESSAGE);
+		}
+		private void startMapa() {
+			new MyMap();
+		}
+	}
 }

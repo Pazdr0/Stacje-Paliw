@@ -222,11 +222,11 @@ public class DirectionsExample extends MapView implements ControlPanel {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        new OptionsWindow(sample, new Dimension(300, 100)) {
-            @Override
-            public void initContent(JWindow contentWindow) {
-                contentWindow.add(sample.controlPanel);
-            }
-        };
+//        new OptionsWindow(sample, new Dimension(300, 100)) {
+//            @Override
+//            public void initContent(JWindow contentWindow) {
+//                contentWindow.add(sample.controlPanel);
+//            }
+//        };
     }
 }

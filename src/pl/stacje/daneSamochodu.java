@@ -1,22 +1,30 @@
 package pl.stacje;
 
 public class daneSamochodu {
-
+	//l
 	private int pojemnoscZbiornika;
 	//km/h
 	private double srednieSpalanie;
-	//ilosc paliwa w zbiorniku
+	//Ilosc paliwa w zbiorniku
 	private double iloscPaliwa;
-	//ile km zostalo jeszcze do przejechania
+	//Ile km zostalo jeszcze do przejechania
 	private double ileKmZostalo;
 	
 
-	public double getIleAktuyalniePrzejedzie() {
-		return iloscPaliwa/srednieSpalanie;
+	//Jeśli użytkownik poda ile zostało km do przejechania to obliczam ile paliwa jest w baku
+	public void setIloscPaliwaObliczone() {
+		iloscPaliwa = ileKmZostalo*srednieSpalanie/100;
 	}
-	public double getIleMaxPrzejedzie() {
-		return pojemnoscZbiornika/srednieSpalanie;
-	}	
+	//Jeśli użytkownik poda ile paliwa jest akutalnie w baku to obliczam ile km zostało do przejechania
+	public void setIleKmZostaloObliczone() {
+		ileKmZostalo = iloscPaliwa/srednieSpalanie*100;
+	}
+//	public double getIleAktualniePrzejedzie() {
+//		return iloscPaliwa/srednieSpalanie;
+//	}
+//	public double getIleMaxPrzejedzie() {
+//		return pojemnoscZbiornika/srednieSpalanie;
+//	}	
 	public int getPojemnoscZbiornika() {
 		return pojemnoscZbiornika;
 	}

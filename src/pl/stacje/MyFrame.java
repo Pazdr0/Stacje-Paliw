@@ -8,37 +8,29 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
-
-import com.sun.javafx.scene.paint.GradientUtils.Point;
-import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
-import com.sun.xml.internal.messaging.saaj.util.TeeInputStream;
-
-import sun.awt.Win32ColorModel24;
 
 
 public class MyFrame extends JFrame{
 	
 	private static final long serialVersionUID = 672L;
-
+	//Panele glowny sluzy do przelączania między resztą
 	private JPanel panelGlowny;
 	private JPanel panelMapa;
 	private JPanel panelInfo;
 	private JPanel panelInfo2;
 	private JPanel panelDane;
-	private JWindow okno;
 	private JButton przyciskDalej;
 	private JLabel etykietkaPojemnosc;
 	private JLabel etykietkaSpalanie;
@@ -46,21 +38,25 @@ public class MyFrame extends JFrame{
 	private JLabel etykietkaInfo;
 	private JLabel etykietkaInfo2; 
 	private JLabel etykietkaIleKm;
-	private JTextArea polePojemnosc;
-	private JTextArea poleSpalanie;
-	private JTextArea poleIleWZbiorniku;
-	private JTextArea poleIleKm;
-	
-	
+	private JTextField polePojemnosc;
+	private JTextField poleSpalanie;
+	private JTextField poleIleWZbiorniku;
+	private JTextField poleIleKm;
+	//Okno wyboru punktu miejsca wyjazdy i docelowego
+	private JWindow okno;
+	//Komponenty JWindow
+	private JTextField skad;
+	private JTextField dokad;
+	//Obiekty moich klas
 	private daneSamochodu samochod;
 	private Trasa trasa;
 	private MyMap mojaMapa;
 	
-	private JTextField skad;
-	private JTextField dokad;
+
 	
 	public MyFrame() {
 		//Panel główny, który zarządza pozostałymi komponentami, CardLayout, dodaje do niego pozostałe panele
+		//TODO jeszcze dodać w panelu z Danymi ile max kilometrów chce odjechać od trasy etykieta i textfield
 		panelGlowny = new JPanel();
 		panelMapa = new JPanel();
 		panelDane = new JPanel();
@@ -68,11 +64,19 @@ public class MyFrame extends JFrame{
 		trasa = new Trasa();
 
 		informacjeOkno();
-
+		
 		panelGlowny.setLayout(new CardLayout());
 		panelGlowny.add(panelDane, "Panel Dane");
 		panelGlowny.add(panelMapa, "Panel Mapa");
 		this.getContentPane().add(panelGlowny, BorderLayout.CENTER);
+	}
+	
+	private void pobieranieDanychTrasy() {
+		trasa = new Trasa();
+		trasa.setPunktA(skad.getText());
+		trasa.setPunktB(dokad.getText());
+//		trasa.setDlugoscTrasy(mojaMapa.getDystans());
+		System.out.println("Dystans: " + trasa.getDlugoscTrasy());
 	}
 	
 	private void informacjeOkno() {
@@ -80,22 +84,29 @@ public class MyFrame extends JFrame{
 		panelInfo = new JPanel();
 		panelInfo2 = new JPanel();
 		przyciskDalej = new JButton("Dalej");
+		//Tworze i nazywam etykiety
 		etykietkaPojemnosc = new JLabel("Pojemność zbiornika: ");
 		etykietkaSpalanie = new JLabel("Średnie spalanie samochodu: ");
 		etykietkaIleWZbiorniku = new JLabel("Ile jest akutalnie paliwa w zbiorniku: ");
 		etykietkaInfo = new JLabel("Informacje na temat pojazdu oraz trasy.");
 		etykietkaInfo2 = new JLabel("Podaj ile aktualnie jest paliwa w zbiorniku, bądż ile kilometów zostało do przejechania, pozostałe parametry obowiązkowe"); 
 		etykietkaIleKm = new JLabel("Ile kilometrów zostało do przejechania: ");
-		polePojemnosc = new JTextArea();
-		poleSpalanie = new JTextArea();
-		poleIleWZbiorniku = new JTextArea();
-		poleIleKm = new JTextArea();
+		polePojemnosc = new JTextField();
+		poleSpalanie = new JTextField();
+		poleIleWZbiorniku = new JTextField();
+		poleIleKm = new JTextField();
+		//Zmieniam obramowanie na niewidoczne
+		poleIleKm.setBorder(BorderFactory.createEmptyBorder());
+		poleSpalanie.setBorder(BorderFactory.createEmptyBorder());
+		polePojemnosc.setBorder(BorderFactory.createEmptyBorder());
+		poleIleWZbiorniku.setBorder(BorderFactory.createEmptyBorder());
+		//Większa czcionka
 		etykietkaInfo.setFont(new Font("Serif", Font.PLAIN, 26));
 		etykietkaInfo2.setFont(new Font("Serif", Font.PLAIN, 20));
 		etykietkaInfo.setVerticalAlignment(SwingConstants.CENTER);
 		
-		Dimension poleDim = new Dimension(10, 10);
-		polePojemnosc.setMaximumSize(poleDim);
+//		Dimension poleDim = new Dimension(10, 10);
+//		polePojemnosc.setMaximumSize(poleDim);
 		
 		//Ustawienie Layoutu
 		GridLayout gridLayout = new GridLayout(4, 2);
@@ -131,6 +142,7 @@ public class MyFrame extends JFrame{
 	private void menuWyboru() {
 		skad = new JTextField();
 		dokad = new JTextField();
+		//Przezroczystość
 		skad.setOpaque(false);
 		dokad.setOpaque(false);
 		skad.addActionListener(new celListener());
@@ -143,20 +155,40 @@ public class MyFrame extends JFrame{
 		okno.getContentPane().add(skad);
 		okno.getContentPane().add(dokad);
 		ustawOkno();
-//		okno.addMouseListener(new myszkaListener());
-		okno.setSize(200,100);
+		okno.setSize(150,100);
 		okno.setVisible(true);
+		this.addComponentListener(new ramkaListener());
+	}
+
+	private void wyborTrasy() {
+		panelMapa.setLayout(new BorderLayout());
+		mojaMapa = new MyMap();
+		panelMapa.add(mojaMapa, BorderLayout.CENTER);
+		menuWyboru();
+		mojaMapa.getWspolrzedne();
+		
 	}
 	
 	private void ustawOkno() {
 		okno.setLocation(this.getX()+10, this.getY()+40);
 	}
 	
-	private void wyborTrasy() {
-		panelMapa.setLayout(new BorderLayout());
-		mojaMapa = new MyMap();
-		panelMapa.add(mojaMapa, BorderLayout.CENTER);
-		menuWyboru();
+	//Klasa stworzona po to, aby JWindow poruszało się razem z JFrame
+	class ramkaListener implements ComponentListener {
+		//Jeśli ramka się porusza to okno do wczytywania trasy też
+		@Override
+		public void componentMoved(ComponentEvent e) {
+			ustawOkno();		
+		}
+		//Niepotrzebna, ale trzeba przesłonić
+		@Override
+		public void componentHidden(ComponentEvent e) {	}
+		//Niepotrzebna, ale trzeba przesłonić
+		@Override
+		public void componentResized(ComponentEvent e) { }
+		//Niepotrzebna, ale trzeba przesłonić
+		@Override
+		public void componentShown(ComponentEvent e) { }
 	}
 	
 	//Klasa do obslugi obliczania zmienionej trasy
@@ -165,32 +197,10 @@ public class MyFrame extends JFrame{
 		//Po wpisanu nowych zmiennych do pól wyznacza nową trase
 		public void actionPerformed(ActionEvent e) {
 			mojaMapa.calculateDirection(skad, dokad);
+//			pobieranieDanychTrasy();
 		}
 	}
-	//TODO Docelowo Klasa, która ma zmieniać położenie okna w ramce
-	class myszkaListener implements MouseListener {
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			ustawOkno();
-		}
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			ustawOkno();
-		}
-		@Override
-		public void mouseExited(MouseEvent e) {
-			ustawOkno();
-		}
-		@Override
-		public void mousePressed(MouseEvent e) {
-			ustawOkno();
-		}
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			ustawOkno();
-		}
-	}
-	//Klasa do sterowania przyciskiem z panelu Dane
+	
 	//Klasa definiuje jak działa przyciskDalej
 	class przyciskListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {

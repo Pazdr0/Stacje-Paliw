@@ -6,9 +6,9 @@ public class Main {
 
 	public void start() {
 		MyFrame ramka = new MyFrame();
-		ramka.setSize(1000, 500);
+		ramka.setSize(1000, 700);
 		ramka.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		ramka.setLocation(500, 300);
+		ramka.setLocation(300, 200);
 		ramka.setVisible(true);
 	}
 	

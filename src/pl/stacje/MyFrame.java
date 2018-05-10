@@ -11,6 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.BorderFactory;
@@ -24,6 +25,9 @@ import javax.swing.JTextField;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
+import org.hibernate.*;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 
 public class MyFrame extends JFrame{
 	
@@ -59,12 +63,15 @@ public class MyFrame extends JFrame{
 	private JTextField dokad;
 	//Combobox
 	private JComboBox<String> comboBox;
+	//SessionFactory - Hibernate
+	private SessionFactory factory;
 	//Obiekty moich klas
 	private daneSamochodu samochod;
 	private Trasa trasa;
 	private MyMap mojaMapa;
-	private DBConnection myConn;
-
+//	private DBConnection myConn;
+	private List<DaneStacji> stacje;
+	
 	
 	public MyFrame() {
 		//Panel główny, który zarządza pozostałymi komponentami, CardLayout, dodaje do niego pozostałe panele
@@ -74,11 +81,19 @@ public class MyFrame extends JFrame{
 		panelDane = new JPanel();
 		samochod = new daneSamochodu();
 		trasa = new Trasa();
+		//SessionFactory
+		factory = new Configuration()
+				.configure("hibernate.cfg.xml")
+				.addAnnotatedClass(DaneStacji.class)
+				.buildSessionFactory();
 
 		informacjeOkno();
+
+		pobierzDaneZBazy();
+		
+		wyswietlDaneZBazy();
 		
 //		myConn = new DBConnection();
-		
 		
 		panelGlowny.setLayout(new CardLayout());
 		panelGlowny.add(panelDane, "Panel Dane");
@@ -86,7 +101,29 @@ public class MyFrame extends JFrame{
 		this.getContentPane().add(panelGlowny, BorderLayout.CENTER);
 	}
 	
-
+	public void wyswietlDaneZBazy() {
+		for (DaneStacji stacja : stacje) {
+			System.out.println("ID: " + stacja.getId() +
+								"Nazwa Stacji: " + stacja.getNazwaStacji() +
+								"Miejscowość: " + stacja.getMiejscowosc() +
+								"Adres: " + stacja.getAdres() + 
+								"Cena benzyny 95: " + stacja.getCenaBenzyny95() + 
+								"Cena benzyny 98: " + stacja.getCenaBenzyny98() + 	
+								"Cena oleju napędowego" + stacja.getCenaON());
+		}
+	}
+	
+	public void pobierzDaneZBazy() {
+		try {
+			Session sesja = factory.getCurrentSession();
+			sesja.beginTransaction();
+//			Query query = sesja.createQuery("from stacje");
+			stacje = sesja.createQuery("from stacje").getResultList();
+			sesja.close();
+		} finally {
+			factory.close();
+		}
+	}
 	//Pierwszy panel z informacjami o samochodzie i o trasie
 	private void informacjeOkno() {
 		//TODO do poprawienia jest cały układ graficzny, narazie jest dosyć chujowy, ale działa

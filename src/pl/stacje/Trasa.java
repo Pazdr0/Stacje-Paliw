@@ -7,6 +7,9 @@ public class Trasa {
 	//Jaka jest dopuszczalna odległość jaką można zjechać z trasy
 	private double maxOdlegloscOdTrasy;
 	
+	public Trasa() {
+		maxOdlegloscOdTrasy = 0;
+	}	
 	public String getPunktA() {
 		return punktA;
 	}
@@ -31,5 +34,4 @@ public class Trasa {
 	public void setMaxOdlegloscOdTrasy(double maxOdlegloscOdTrasy) {
 		this.maxOdlegloscOdTrasy = maxOdlegloscOdTrasy;
 	}
-	
 }

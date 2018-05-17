@@ -4,6 +4,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.teamdev.jxmaps.LatLng;
+
 
 @Entity
 @Table(name="stacje")
@@ -31,6 +35,10 @@ public class DaneStacji {
 	@Column(name="cena_oleju_napedowego")
 	private Double cenaON;
 //	private Double cenaPaliwa;
+	@Transient
+	private LatLng wspolrzedne;
+	
+	public DaneStacji() {}
 	public DaneStacji(String nazwaStacji, String miejscowosc, String adres, Double cenaBenzyny95, Double cenaBenzyny98,
 			Double cenaON) {
 		super();
@@ -42,6 +50,12 @@ public class DaneStacji {
 		this.cenaON = cenaON;
 	}
 	
+	public String getWspolrzedne() {
+		return wspolrzedne.toString();
+	}
+	public void setWspolrzedne(LatLng wspolrzedne) {
+		this.wspolrzedne = wspolrzedne;
+	}
 	@Override
 	public String toString() {
 		return "DaneStacji [id=" + id + ", nazwaStacji=" + nazwaStacji + ", miejscowosc=" + miejscowosc + ", adres="
@@ -90,5 +104,4 @@ public class DaneStacji {
 	public void setCenaON(Double cenaON) {
 		this.cenaON = cenaON;
 	}
-
 }

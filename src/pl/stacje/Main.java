@@ -12,9 +12,7 @@ public class Main {
 		ramka.setVisible(true);
 	}
 	
-	
 	public static void main(String[] args) {
 		new Main().start();
 	}
-
 }

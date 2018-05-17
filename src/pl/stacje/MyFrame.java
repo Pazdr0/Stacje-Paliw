@@ -11,6 +11,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.BorderFactory;
@@ -24,6 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
+import org.hibernate.*;
+import org.hibernate.cfg.Configuration;
 
 public class MyFrame extends JFrame{
 	
@@ -59,12 +64,14 @@ public class MyFrame extends JFrame{
 	private JTextField dokad;
 	//Combobox
 	private JComboBox<String> comboBox;
+	//SessionFactory - Hibernate
+	private SessionFactory factory;
 	//Obiekty moich klas
 	private daneSamochodu samochod;
 	private Trasa trasa;
 	private MyMap mojaMapa;
-	private DBConnection myConn;
-
+//	private DBConnection myConn;
+	private List<DaneStacji> stacje;
 	
 	public MyFrame() {
 		//Panel główny, który zarządza pozostałymi komponentami, CardLayout, dodaje do niego pozostałe panele
@@ -74,11 +81,20 @@ public class MyFrame extends JFrame{
 		panelDane = new JPanel();
 		samochod = new daneSamochodu();
 		trasa = new Trasa();
+		mojaMapa = new MyMap();
+		//SessionFactory
+		factory = new Configuration()
+				.configure("hibernate.cfg.xml")
+				.addAnnotatedClass(DaneStacji.class)
+				.buildSessionFactory();
 
+		pobierzDaneZBazy();
+		
 		informacjeOkno();
 		
-//		myConn = new DBConnection();
+		wyswietlDaneZBazy();
 		
+//		zlokalizujStacje();
 		
 		panelGlowny.setLayout(new CardLayout());
 		panelGlowny.add(panelDane, "Panel Dane");
@@ -86,7 +102,58 @@ public class MyFrame extends JFrame{
 		this.getContentPane().add(panelGlowny, BorderLayout.CENTER);
 	}
 	
-
+	public void zlokalizujStacje() {
+		
+		for (DaneStacji stacja : stacje) {
+			stacja.setWspolrzedne(mojaMapa.lokalizujStacje(stacja.getMiejscowosc() + ", "+ stacja.getAdres()));
+			System.out.println("a");
+//			try {
+//				TimeUnit.MILLISECONDS.sleep(200);
+//				System.out.println(stacja.getWspolrzedne());
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+			
+		}
+	}
+	//Tak jak nazwa, wyswietla wszystkie stacje
+	public void wyswietlDaneZBazy() {
+		for (DaneStacji stacja : stacje) {
+			System.out.println("ID: " + stacja.getId() +
+								",\tNazwa Stacji: " + stacja.getNazwaStacji() +
+								",\tMiejscowość: " + stacja.getMiejscowosc() +
+								",\tAdres: " + stacja.getAdres() + 
+								",\t\tCena benzyny 95: " + stacja.getCenaBenzyny95() + 
+								",\tCena benzyny 98: " + stacja.getCenaBenzyny98() + 	
+								",\tCena oleju napędowego: " + stacja.getCenaON());
+		}
+	}
+	//Tworze sesje, tworze zapytanie i pobieram wszystkie dane z basy do kolekcji List<>
+	public void pobierzDaneZBazy() {
+		Session sesja = factory.getCurrentSession();
+		try {
+			sesja.beginTransaction();
+			stacje = castList(DaneStacji.class, sesja.createQuery("from DaneStacji").list());
+			sesja.getTransaction().commit();
+		} finally {
+			factory.close();
+			zlokalizujStacje();
+		}
+		try {
+			TimeUnit.MILLISECONDS.sleep(200);
+			zlokalizujStacje();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	//Funkcja do castowania obiektów klasy DaneStacji do kolekcji List, 
+	//bez tego w metodzie pobierzDaneZBazy wyrzuca warning przy pobieraniu stacji z bazy
+	public static <T> List<T> castList(Class<? extends T> clazz, Collection<?> c) {
+	    List<T> r = new ArrayList<T>(c.size());
+	    for(Object o: c)
+	      r.add(clazz.cast(o));
+	    return r;
+	}
 	//Pierwszy panel z informacjami o samochodzie i o trasie
 	private void informacjeOkno() {
 		//TODO do poprawienia jest cały układ graficzny, narazie jest dosyć chujowy, ale działa
@@ -184,7 +251,6 @@ public class MyFrame extends JFrame{
 	//Tworzy obiekt MyMap i wyświetla mape z centrum we Wro
 	private void wyborTrasy() {
 		panelMapa.setLayout(new BorderLayout());
-		mojaMapa = new MyMap();
 		panelMapa.add(mojaMapa, BorderLayout.CENTER);
 		menuWyboru();
 //		mojaMapa.getWspolrzedne();

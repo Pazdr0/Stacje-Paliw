@@ -3,6 +3,7 @@ package pl.stacje;
 import com.teamdev.jxmaps.GeocoderRequest;
 import com.teamdev.jxmaps.GeocoderCallback;
 import com.teamdev.jxmaps.GeocoderStatus;
+import com.teamdev.jxmaps.LatLng;
 import com.teamdev.jxmaps.GeocoderResult;
 import com.teamdev.jxmaps.Map;
 import com.teamdev.jxmaps.MapReadyHandler;
@@ -22,7 +23,8 @@ public class MyMap extends MapView {
 
 	private static final long serialVersionUID = 673L;
 	private double dystans;
-
+	private LatLng cooords;
+	
 	public MyMap() {
 		super();
 		mapa();
@@ -88,4 +90,21 @@ public class MyMap extends MapView {
             }
         });
     }
+	
+
+	public LatLng lokalizujStacje(String adres) {
+		final Map mapa = getMap();
+		mapa.setZoom(5.0);
+		GeocoderRequest request = new GeocoderRequest();
+
+		getServices().getGeocoder().geocode(request, new GeocoderCallback(mapa) {
+			@Override
+			public void onComplete(GeocoderResult[] result, GeocoderStatus status) {
+				 cooords = result[0].getGeometry().getLocation(); 
+				 System.out.println(cooords);
+			}
+		});
+		
+		return cooords;
+	}
 }

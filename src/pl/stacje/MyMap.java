@@ -92,11 +92,12 @@ public class MyMap extends MapView {
     }
 	
 
-	public LatLng lokalizujStacje(String adres) {
+	public String[] lokalizujStacje(String adres) {
 		final Map mapa = getMap();
 		mapa.setZoom(5.0);
 		GeocoderRequest request = new GeocoderRequest();
-
+		request.setAddress(adres);
+		
 		getServices().getGeocoder().geocode(request, new GeocoderCallback(mapa) {
 			@Override
 			public void onComplete(GeocoderResult[] result, GeocoderStatus status) {
@@ -104,7 +105,9 @@ public class MyMap extends MapView {
 				 System.out.println(cooords);
 			}
 		});
-		
-		return cooords;
+		String[] wspolrzedne = new String[2];
+		wspolrzedne[0] = Double.toString(cooords.getLat());
+		wspolrzedne[1] = Double.toString(cooords.getLng());
+		return wspolrzedne;
 	}
 }

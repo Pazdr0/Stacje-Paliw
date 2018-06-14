@@ -37,6 +37,11 @@ public class DaneStacji {
 //	private Double cenaPaliwa;
 	@Transient
 	private LatLng wspolrzedne;
+	@Column(name="")
+	private String dlugoscGeo;
+	@Column(name="")
+	private String szerokoscGeo;
+	
 	
 	public DaneStacji() {}
 	public DaneStacji(String nazwaStacji, String miejscowosc, String adres, Double cenaBenzyny95, Double cenaBenzyny98,
@@ -53,8 +58,9 @@ public class DaneStacji {
 	public String getWspolrzedne() {
 		return wspolrzedne.toString();
 	}
-	public void setWspolrzedne(LatLng wspolrzedne) {
-		this.wspolrzedne = wspolrzedne;
+	public void setWspolrzedne(String[] wspolrzedne) {
+		this.dlugoscGeo = wspolrzedne[0];
+		this.szerokoscGeo = wspolrzedne[1];
 	}
 	@Override
 	public String toString() {

@@ -30,6 +30,7 @@ import javax.swing.SwingConstants;
 import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 
+
 public class MyFrame extends JFrame{
 	
 	//TODO składowe, które nie muszą być składowymi, a mogą być zmiennymi lokalnymi wrzycić do funckji, ale to może być na koniec
@@ -103,16 +104,27 @@ public class MyFrame extends JFrame{
 	}
 	
 	public void zlokalizujStacje() {
-		
+		Session sesja = factory.getCurrentSession();
 		for (DaneStacji stacja : stacje) {
-			stacja.setWspolrzedne(mojaMapa.lokalizujStacje(stacja.getMiejscowosc() + ", "+ stacja.getAdres()));
-			System.out.println("a");
+//			stacja.setWspolrzedne(mojaMapa.lokalizujStacje(stacja.getMiejscowosc() + ", "+ stacja.getAdres()));
+//			System.out.println("a");
 //			try {
 //				TimeUnit.MILLISECONDS.sleep(200);
 //				System.out.println(stacja.getWspolrzedne());
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
+			stacja.setWspolrzedne(mojaMapa.lokalizujStacje(stacja.getMiejscowosc() + ", " + stacja.getAdres()));
+			
+			try {
+				sesja.beginTransaction();
+				sesja.saveOrUpdate(stacja);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			} finally {
+				factory.close();
+			}
+			
 			
 		}
 	}
@@ -136,7 +148,8 @@ public class MyFrame extends JFrame{
 			stacje = castList(DaneStacji.class, sesja.createQuery("from DaneStacji").list());
 			sesja.getTransaction().commit();
 		} finally {
-			factory.close();
+//			factory.close();
+			sesja.close();
 			zlokalizujStacje();
 		}
 		try {
